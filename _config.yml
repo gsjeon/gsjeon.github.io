@@ -1,7 +1,7 @@
 # Setup
-title: Not Pure Poole
-description: A simple, beautiful, and powerful Jekyll theme for blogs
-url: https://vszhub.github.io
+title: Gwangseok's Blog!
+description: 고양이를 좋아하고, Cloud Platorm에 관심이 많습니다.
+url: https://gsjeon.github.io
 avatar: /avatar.jpeg
 paginate: 5
 permalink: pretty
@@ -29,14 +29,14 @@ exclude:
 
 # Optimize Jekyl SEO Tag
 twitter:
-  username: vszhub
+  username: gsjeon
   card: summary
 logo: logo.png
 social:
-  name: Songzi Vong
+  name: Gwangseok Jeon
   links:
-    - https://twitter.com/vszhub
-    - https://github.com/vszhub
+    - https://twitter.com/gsjeon
+    - https://github.com/gsjeon
 google_site_verification: xxxxx
 lang: en
 
@@ -54,6 +54,6 @@ sass:
 
 # Specify the author for blog posts
 author:
-  name: Songzi Vong
-  url: https://github.com/vszhub/
-  email: vszhub@gmail.com
+  name: Gwangseok Jeon
+  url: https://github.com/gsjeon/
+  email: rhkdtjr132@gmail.com
