@@ -40,4 +40,4 @@ VM 을 만들면, VM은 메타데이터 서비스 호출을 위해 아래와 같
 셋팅된다.
 
 
-![route](./images/route.JPG)
+![route](route.JPG)
