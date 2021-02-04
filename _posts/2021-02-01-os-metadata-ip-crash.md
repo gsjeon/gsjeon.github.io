@@ -88,7 +88,7 @@ toc:  true
 
 검증을 위해 DHCP 서버의 IP를 `20번` 으로 변경했다.
 
-![route](/images/new_dhcp-mac.JPG){: width="800" height="400"}
+![route](/images/new_dhcp-mac.JPG){: width="800" height="200"}
 
 * MAC 주소는 fa:16:3e:08:fd:e2 이다.
 
@@ -102,7 +102,7 @@ VM 내부에서 라우팅 테이블을 확인했다.
 
 VM 내부에서 arp 해보았다.
 
-![route](/images/new_arp.JPG){: width="800" height="400"}
+![route](/images/new_arp.JPG){: width="800" height="200"}
 
 * 게이트웨이 ( 192.168.207.20 ) 의 MAC 주소가 fa-16-3e-08-fd-e2 이다.
 * 실제 DHCP 서버의 MAC 주소와 동일한 것으로 확인되었다.
