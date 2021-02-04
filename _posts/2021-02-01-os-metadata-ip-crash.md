@@ -30,7 +30,7 @@ toc:  true
 * user-data pluing 은 오픈스택 metadata-service 를 호출한다.
 * metadata 서버는 응답하지 않아 "Timed out" 이 발생한다.
 
-대체 왜 Metadata Service 가 작동하지 않는걸까?
+> 대체 왜 Metadata Service 가 작동하지 않는걸까?
 
 
 장애분석
@@ -40,4 +40,4 @@ VM 을 만들면, VM은 메타데이터 서비스 호출을 위해 아래와 같
 셋팅된다.
 
 
-![route](.images/route.JPG)
+![route](images/route.JPG)
