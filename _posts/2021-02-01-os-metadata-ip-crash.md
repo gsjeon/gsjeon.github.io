@@ -47,7 +47,7 @@ toc:  true
 
 2.) 메타데이터 서버로 가기 위한 게이트웨이(192.168.2072.)는 DHCP 서버의 IP 이다.
 
-![route](/images/dhcp-mac.JPG){: width="800" height="400"}
+![route](/images/dhcp-mac.JPG){: width="800" height="200"}
 
 * 위 IP 정보는 DHCP 서버의 IP 정보이며, DHCP 서버는 현재 "컨트롤러 노드" 에서
   실행 중이다.
@@ -55,7 +55,7 @@ toc:  true
 
 3.) VM 내부에서 arp 하였다.
 
-![route](/images/arp.JPG){: width="800" height="400"}
+![route](/images/arp.JPG){: width="800" height="200"}
 
 * 문제가 바로 보인다.
 * VM 내부에서는 192.168.207.2 의 MAC 주소를 94-3f-c2-55-5e-fc 로 알고있다.
@@ -88,21 +88,21 @@ toc:  true
 
 검증을 위해 DHCP 서버의 IP를 `20번` 으로 변경했다.
 
-![route](/images/new-dhcp-mac.JPG){: width="800" height="400"}
+![route](/images/new_dhcp-mac.JPG){: width="800" height="400"}
 
 * MAC 주소는 fa:16:3e:08:fd:e2 이다.
 
 
 VM 내부에서 라우팅 테이블을 확인했다.
 
-![route](/images/new-route.JPG){: width="800" height="400"}
+![route](/images/new_route.JPG){: width="800" height="400"}
 
 * 위와 같이 `메타데이터 ( 169.254.169.254 )` 로 가는 패킷은 `게이트웨이 ( 192.168.207.20 )` 을 거쳐 가도록 변경되었다.
 
 
 VM 내부에서 arp 해보았다.
 
-![route](/images/new-arp.JPG){: width="800" height="400"}
+![route](/images/new_arp.JPG){: width="800" height="400"}
 
 * 게이트웨이 ( 192.168.207.20 ) 의 MAC 주소가 fa-16-3e-08-fd-e2 이다.
 * 실제 DHCP 서버의 MAC 주소와 동일한 것으로 확인되었다.
@@ -111,7 +111,7 @@ VM 내부에서 arp 해보았다.
 
 이제 메타데이터 서비스 요청해보자.
 
-![route](/images/curl.JPG){: width="800" height="400"}
+![route](/images/curl.JPG){: width="800" height="100"}
 
 * 200 OK !
 
