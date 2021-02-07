@@ -83,7 +83,7 @@ toc:  true
 
 검증을 위해 우선 아래와 같이 설정을 진행했다. (진행 과정 생략)
 * DHCP IP Pool 을 2 ~ 254 가 아닌 20 ~ 254 로 변경했다.
-* DHCP Agent 를 재시작하여, DHCP 서버가 /mark>20번 IP</mark> 를 할당 받도록 했다.
+* DHCP Agent 를 재시작하여, DHCP 서버가 <mark>20번 IP</mark> 를 할당 받도록 했다.
 
 
 검증을 위해 DHCP 서버의 IP를 <mark>20번</mark> 으로 변경했다.
