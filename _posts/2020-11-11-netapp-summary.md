@@ -33,4 +33,4 @@ NetApp NFS 도입 검토중에 있다.
 3. Cinder 에 이미지 캐시가 없고, Glance 저장소와 동일하지 않지만, CopyOffload 기능이 활성화 된 경우 - [Copy Offload Tools 구성/검증](https://gsjeon.github.io/openstack/netapp/2020/11/11/netapp-copyoffload/)
 
 
-![netapp-flow](/images/2020-11-11-netapp-summary/netapp-flow.PNG)
+![netapp-flow](/images/2020-11-11-netapp-summary/netapp-flow.png)
