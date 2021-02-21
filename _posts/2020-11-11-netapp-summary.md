@@ -28,9 +28,9 @@ NetApp NFS 도입 검토중에 있다.
 
 각각의 경우를 테스트하여 효율적인 볼륨 생성을 가능 하도록 한다.
 
-1. Cinder 에 이미지 캐시가 이미 존재하는 경우 - [Netapp Flexclone 구성/검증] (https://gsjeon.github.io/kubernetes/2021/02/01/k8s-health/)
-2. Cinder 에 이미지 캐시가 없지만, Glance 저장소와 동일한 경우 - [Create volume directly from image. (skip cache image)]
-3. Cinder 에 이미지 캐시가 없고, Glance 저장소와 동일하지 않지만, CopyOffload 기능이 활성화 된 경우 - [Copy Offload Tools 구성/검증]
+1. Cinder 에 이미지 캐시가 이미 존재하는 경우 - [Netapp Flexclone 구성/검증](https://gsjeon.github.io/openstack/netapp/2020/11/11/netapp-flexclone/)
+2. Cinder 에 이미지 캐시가 없지만, Glance 저장소와 동일한 경우 - [Create volume directly from image. (skip cache image)](https://gsjeon.github.io/openstack/netapp/2020/11/11/netapp-direct-clone-image/)
+3. Cinder 에 이미지 캐시가 없고, Glance 저장소와 동일하지 않지만, CopyOffload 기능이 활성화 된 경우 - [Copy Offload Tools 구성/검증](https://gsjeon.github.io/openstack/netapp/2020/11/11/netapp-copyoffload/)
 
 
-![netapp-flow](/images/2020-11-11-netapp-summary//netapp-flow.JPG)
+![netapp-flow](/images/2020-11-11-netapp-summary/netapp-flow.JPG)
