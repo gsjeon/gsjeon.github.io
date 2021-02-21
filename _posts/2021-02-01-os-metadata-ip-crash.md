@@ -6,7 +6,6 @@ date: 2021-02-01 10:58 +0900
 last_modified_at: 2021-02-02 16:18:25 +0900
 tags:
 - openstack
-- metadata
 - 기술지원
 categories:
 - openstack
