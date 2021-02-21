@@ -34,3 +34,5 @@ NetApp NFS 도입 검토중에 있다.
 
 
 ![netapp-flow](/images/2020-11-11-netapp-summary/netapp-flow.png)
+
+* 이미지 출처 - https://netapp-openstack-dev.github.io/openstack-docs/train/glance/deployment_choice/section_glance-enhanced-instance-creation.html
