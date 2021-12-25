@@ -1,2 +1,3 @@
-blog/**
+#blog/**
 __pycache__/**
+_exts/__pycache__/**
