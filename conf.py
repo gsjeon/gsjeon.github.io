@@ -68,7 +68,8 @@ first_page_title = 'Posts'
 # **************************************************************
 
 # Add other Sphinx extensions here
-extensions = ['tinkerer.ext.blog', 'tinkerer.ext.disqus', 'withgithub']
+#extensions = ['tinkerer.ext.blog', 'tinkerer.ext.disqus', 'withgithub']
+extensions = ['tinkerer.ext.blog', 'fbcomments', 'withgithub']
 
 # Add other template paths here
 templates_path = ['_templates']
