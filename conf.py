@@ -10,22 +10,22 @@ import tinkerer.paths
 # **************************************************************
 
 # Change this to the name of your blog
-project = 'My blog'
+project = '광석 블로그'
 
 # Change this to the tagline of your blog
-tagline = 'Add intelligent tagline here'
+tagline = '고양이를 좋아하고 클라우드 분야에 관심이 많습니다.'
 
 # Change this to the description of your blog
-description = 'This is an awesome blog'
+description = 'Tech blog'
 
 # Change this to your name
-author = 'Winston Smith'
+author = 'Gwangseok Jeon'
 
 # Change this to your copyright string
-copyright = '1984, ' + author
+copyright = '2022, ' + author
 
 # Change this to your blog root URL (required for RSS feed)
-website = 'http://127.0.0.1/blog/html/'
+website = 'https://gsjeon.github.io/'
 
 # **************************************************************
 # More tweaks you can do
