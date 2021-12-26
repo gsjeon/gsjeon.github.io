@@ -5,7 +5,7 @@
     :copyright: Copyright 2011-2013 by Vlad Riscutia
     :license: FreeBSD
 '''
-from sphinx.util.compat import Directive
+from docutils.parsers.rst import Directive
 from docutils import nodes
 
 
