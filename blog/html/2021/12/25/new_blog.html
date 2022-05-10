@@ -1,0 +1,293 @@
+<!DOCTYPE html><!--[if lt IE 7]>      <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:og="http://ogp.me/ns#"
+    xmlns:fb="https://www.facebook.com/2008/fbml" class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="Tech blog">
+        <meta name="viewport" content="width=device-width">
+        <title>22 년도를 위한 블로그 이전 &mdash; 광석 블로그</title>
+            <link rel="stylesheet" href="../../../_static/normalize.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/sphinx.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/main.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/flat.css" type="text/css">
+            <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+            <link rel="stylesheet" href="../../../_static/font-awesome.min.css" type="text/css">
+        <link rel="shortcut icon" href="../../../_static/tinkerer.ico" /><!-- Load modernizr and JQuery -->
+        <script src="../../../_static/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="../../../_static/vendor/jquery-1.8.2.min.js"><\/script>')</script>
+        <script src="../../../_static/plugins.js"></script>
+        <script src="../../../_static/main.js"></script>
+        <link rel="search" title="Search" href="../../../search.html" /><link rel="prev" title="개발환경 구성(kvm + vagrant)" href="../../../2022/05/10/개발환경_구성_kvm_vagrant.html" /><link rel="alternate" type="application/rss+xml" title="RSS" href="../../../rss.html" /><script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.7.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        SOURCELINK_SUFFIX: '.txt',
+        HAS_SOURCE:  true
+      };
+    </script><script type="text/javascript" src="../../../_static/underscore.js"></script><script type="text/javascript" src="../../../_static/doctools.js"></script><script type="text/javascript" src="../../../_static/fb.js"></script>
+    <meta property="fb:admins" content="rhkdtjr132@naver.com"/>
+    
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Scroll to content if on small screen
+            if (screen.width < 480)
+            {
+                $(document).scrollTop(document.getElementsByTagName("article")[0].offsetTop - 44);
+            }
+        });
+    </script>
+</head>
+    <body role="document">
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+      <div id="container"><header role="banner">
+            <hgroup>
+              <h1><a href="../../../index.html">광석 블로그</a></h1><h2>고양이를 좋아하고 클라우드 분야에 관심이 많습니다.</h2></hgroup>
+          </header>
+      <nav role="navigation">
+            <ul><li class="main-nav">
+                  <a href="../../../index.html">Posts</a>
+                </li>
+              </ul>
+          </nav><div class="main-container" role="main"><div class="main wrapper body clearfix"><article><div class="timestamp postmeta">
+            <span>December 25, 2021</span>
+        </div>
+    <div class="section" id="section-1">
+<h1>22 년도를 위한 블로그 이전</h1>
+<p>22 년도 부터 기술 블로그를 이전한다.</p>
+<p>크리스마스를 맞아 새로운 블로그를 개설하자!</p>
+<blockquote>
+<div>Merry, christmas!</div></blockquote>
+<div id="more"> </div><div class="section" id="section-2">
+<h2>블로그 플랫폼 선택</h2>
+<p>플로그 플랫픔은 매우 다양하다.</p>
+<ul class="simple">
+<li>네이버 블로그</li>
+<li>카카오 티스토리</li>
+<li>구글 블로그</li>
+<li>깃허브 페이지</li>
+<li>워드프레스</li>
+<li>미디엄</li>
+<li>노션</li>
+<li>등등…..</li>
+</ul>
+<p>내가 원하는 블로그는 뭘까?</p>
+<ul class="simple">
+<li>무료로 사용했으면 한다. (광고수익 필요없다.)</li>
+<li>Command 나 Source Code 표현이 되어야 한다.</li>
+<li>검색, 카테고리, 태그, 아카이브, 댓글</li>
+</ul>
+<p>위와 같이 내가 원하는 기능들은 거의 모든 플랫폼에서 지원한다.</p>
+<p>그래서 익숙하게 사용되는 GitHub 기반의 호스팅인 <span class="docutils literal"><span class="pre">GitHub</span> <span class="pre">Pages</span></span> 를 사용하기로 했다.</p>
+<p>GitHub Pages 는 보통 <a class="reference external" href="https://jekyllrb-ko.github.io/">jekyll</a> 이 많이 사용된다. (Ruby 기반임)</p>
+<p>예전에 써봤는데, 개인적인 생각으로 뭔가 불편해서 안썻었다..</p>
+<p>그래서 <a class="reference external" href="https://vladris.com/tinkerer/">Tinkerer</a> 를 사용하여 <span class="docutils literal"><span class="pre">Github</span> <span class="pre">Pages</span></span> 에 호스팅하기로 선택했다.</p>
+<p>이전 회사에서 <span class="docutils literal"><span class="pre">tinkerer</span></span> 를 사용해본 경험이 있기 때문에 친숙하고,</p>
+<p>개인적으로 <span class="docutils literal"><span class="pre">markdown</span></span> 보다 <span class="docutils literal"><span class="pre">rst</span> <span class="pre">(reStructuredText)</span></span> 를 좋아하고,
+<span class="docutils literal"><span class="pre">Ruby</span></span> 보다 <span class="docutils literal"><span class="pre">Python</span></span> 을 좋아하기 때문이다.</p>
+</div>
+<div class="section" id="tinkerer-1">
+<h2>Tinkerer ?</h2>
+<p><a class="reference external" href="https://vladris.com/tinkerer/">Tinkerer</a> 는 <span class="docutils literal"><span class="pre">Python</span></span> 기반의
+<span class="docutils literal"><span class="pre">SSG</span> <span class="pre">(Static</span> <span class="pre">Site</span> <span class="pre">Generator)</span></span> 이다.</p>
+<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> 로 구동되며 <span class="docutils literal"><span class="pre">Sphinx</span></span> 의 확장 프로그램으로 보면 된다.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/ReStructuredText">rst (reStructuredText)</a> 문법으로 글을 작성해야 한다.</p>
+<p><a class="reference external" href="https://github.com/vladris/tinkerer/">Tinkerer GitHub</a> 에 가보니 활발히 개발되진 않고,
+마지막 commit 이 2년전이다.</p>
+<p>그럼에도 불구하고 이걸 사용하려는 이유는 개인적으로 너무 좋고 편하다.</p>
+<p>만약 사용하다 문제가 있다면 내가 고쳐서 컨트리뷰트할 생각이다.</p>
+<p>그래서 내 저장소로 fork 했다.</p>
+</div>
+<div class="section" id="tinkerer-3">
+<h2>Tinkerer 이미지 제작</h2>
+<p>현 최신 버전의 Tinkerer 는 <span class="docutils literal"><span class="pre">Python</span> <span class="pre">3.6</span></span> 을 지원한다.</p>
+<p>현재 내 랩탑에는 <span class="docutils literal"><span class="pre">Python</span> <span class="pre">3.8</span></span> 가 설치되어 있기 때문에 사용하는데 문제가 있을 수 있다.</p>
+<p>나중에 <span class="docutils literal"><span class="pre">Python</span> <span class="pre">3.8</span></span> 을 지원하도록 고쳐서 <span class="docutils literal"><span class="pre">컨트리뷰트</span></span> 할 생각이다.</p>
+<p>결론은 지금은 Tinkerer 를 사용할 <span class="docutils literal"><span class="pre">Python</span> <span class="pre">3.6</span></span> 환경이 필요하다.</p>
+<p>그래서 <span class="docutils literal"><span class="pre">Pyhton</span> <span class="pre">3.6</span></span> + <span class="docutils literal"><span class="pre">Tinkerer</span></span> 를 설치한 컨테이너 이미지를 제작하려고 한다.</p>
+<p>Blog Posting 환경이내 랩탑에 의존하지 않도록 컨테이너 이미지로 만들어 freeze 하자.</p>
+<p>왜냐면 랩탑 고장이나 혹은 다른 PC 에서도 자유롭게 Posting 을 하기 위함이다.</p>
+<p>Dockerfile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat Dockerfile
+FROM        python:3.6.15-slim-buster
+
+# Install tinkerer version 1.7.2 (current latest version)
+WORKDIR     /tinker
+RUN         apt update \
+            &amp;&amp; apt install -y git vim \
+            &amp;&amp; pip install tinkerer==1.7.2
+</pre></div>
+</div>
+<p>Build:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker build -t gsjeon/tinkerer:1.7.2 .
+</pre></div>
+</div>
+<p>Push:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ docker push gsjeon/tinkerer:1.7.2
+</pre></div>
+</div>
+<ul class="simple">
+<li>내 개인 공개 <a class="reference external" href="https://hub.docker.com/repository/docker/gsjeon/tinkerer">DockerHub</a> 에 올려두었다.</li>
+</ul>
+</div>
+<div class="section" id="tinkerer-4">
+<h2>Tinkerer 사용법</h2>
+<p>위에서 Tinkerer 용 컨테이너 이미지를 만들었다.</p>
+<p>Tinker 사용시 컨테이너에 접속하여 사용하는 방법을 설명한다.</p>
+<p>우선 Github Pages 를 사용하려면 깃 레포가 필요하니 만든다.</p>
+<ul class="simple">
+<li>만드는 과정 생략</li>
+</ul>
+<p>로컬 PC 에 Clone 한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone https://github.com/gsjeon/gsjeon.github.io.git
+</pre></div>
+</div>
+<p>Tinker 컨테이너 접속.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat tinker.sh
+#!/bin/bash
+
+docker run --rm \
+           -it \
+           --volume ${HOME}/gsjeon.github.io:/tinker:rw \
+           --volume ~/.gitconfig:/etc/gitconfig:ro \
+           --user $(id -u):$(id -g) \
+           gsjeon/tinkerer:1.7.2 \
+           bash
+
+
+$ ./tinker.sh
+</pre></div>
+</div>
+<p>Tinker init.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tinker --setup
+</pre></div>
+</div>
+<ul class="simple">
+<li>최초 1회만 실행</li>
+</ul>
+<p>Tinker Post.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tinker -p &#39;Hello World&#39;
+New post created as &#39;/tinker/2021/12/25/hello_world.rst&#39;
+
+$ cat 2021/12/25/hello_world.rst
+Hello World
+===========
+
+
+
+.. author:: 전광석
+.. categories:: test
+.. tags:: test, christmas
+.. comments::
+
+Hello, World!
+
+.. more::
+
+Merry, christmas!
+
+
+Tinker build
+
+
+$ tinker -b
+
+
+Git commit &amp; push
+
+
+$ git add --all
+$ git commit -am &#39;Added New Post&#39;
+$ git push
+</pre></div>
+</div>
+<p>Tinker 컨테이너 종료.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ exit
+</pre></div>
+</div>
+<p>이제 위와 같이 포스팅할때 tinker.sh 로 접속하여 포스팅 후 exit 로 종료하면서 사용하면 된다.</p>
+<p>2022 신나게 포스팅하자!</p>
+</div>
+</div>
+
+    <div class="postmeta">
+        <div class="author">
+            <span>Posted by 전광석</span>
+        </div>
+        <div class="categories">
+            <span>
+                Filed under:
+                <a href="../../../categories/blog.html">blog</a></span>
+        </div>
+        <div class="tags">
+            <span>
+                Tags:
+                <a href="../../../tags/blog.html">blog</a>, <a href="../../../tags/christmas.html">christmas</a></span>
+        </div>
+        </div><ul class="related clearfix">
+            <li class="left"> &laquo; <a href="../../../2022/05/10/개발환경_구성_kvm_vagrant.html">개발환경 구성(kvm + vagrant)</a></li>
+            <li class="right"></li>
+        </ul><div id="comments">   <div class="fb-comments" data-href="https://gsjeon.github.io/2021/12/25/new_blog.html">   </div></div></article><aside class="sidebar"><section><div class="widget">
+    <h1>Recent Posts</h1>
+    <ul><li>
+            <a href="../../../2022/05/10/개발환경_구성_kvm_vagrant.html">개발환경 구성(kvm + vagrant)</a>
+        </li><li>
+            <a href="#">22 년도를 위한 블로그 이전</a>
+        </li></ul>
+</div>
+</section><section><div class="widget">
+    <h1>Notice</h1>
+    <div class="highligh-bash">
+        <div class="highlight">
+            <pre>Moved to this blog since 2022.</pre>
+        </div>
+    </div>
+</div></section><section><div class="widget">
+<h1>Links</h1>
+<ul>
+<li><a href='/blog/html/archive.html'>Archive</a></li>
+<li><a href='https://github.com/gsjeon/' target='_blank'>GitHub</a></li>
+
+</div>
+</section><section><div class="widget" id="searchbox" role="search">
+    <h1><a href="#searchbox">Search</a></h1>
+    <form action="../../../search.html" method="get">
+        <input type="text" name="q" />
+        <button type="submit"><span class="fa fa-search"></span></button>
+    </form>
+</div></section><section><div class="widget">
+    <h1>Categories</h1>
+    <ul><li><a href="../../../categories/blog.html">blog</a> (1)</li><li><a href="../../../categories/kvm.html">kvm</a> (1)</li><li><a href="../../../categories/vagrant.html">vagrant</a> (1)</li></ul>
+</div></section><section><div class="widget">
+    <h1>Tags Cloud</h1>
+      <a href="../../../tags/blog.html" style="font-size: 8pt">blog</a>&nbsp;&nbsp;
+      <a href="../../../tags/christmas.html" style="font-size: 8pt">christmas</a>&nbsp;&nbsp;
+      <a href="../../../tags/devenv.html" style="font-size: 8pt">devenv</a>&nbsp;&nbsp;
+      <a href="../../../tags/kvm.html" style="font-size: 8pt">kvm</a>&nbsp;&nbsp;
+      <a href="../../../tags/vagrant.html" style="font-size: 8pt">vagrant</a>
+</div></section></aside></div> <!-- #main --></div> <!-- #main-container -->
+
+        <div class="footer-container" role="contentinfo"><footer class="wrapper">&copy; Copyright 2022, Gwangseok Jeon. Powered by <a href="http://www.tinkerer.me/">Tinkerer</a> and <a href="http://sphinx.pocoo.org/">Sphinx</a>.</footer></div> <!-- footer-container -->
+
+      </div> <!--! end of #container --><!--[if lt IE 7 ]>
+          <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+          <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+        <![endif]-->
+    </body>
+</html>
