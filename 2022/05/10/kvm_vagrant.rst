@@ -61,11 +61,20 @@ KVM Setting
 
 네트워크는 다음과 같이 정의한다.::
 
-   # cat net-mgmt.xml
+   $ cat net-service.xml
    <network>
-       <name>mgmt</name>
-       <forward mode="bridge" />
-       <bridge name="virbr1" />
+       <name>service</name>
+       <forward mode='nat'>
+         <nat>
+           <port start='1024' end='65535'/>
+         </nat>
+       </forward>
+       <bridge name='virbr5' stp='on' delay='0'/>
+       <ip address='5.5.5.1' netmask='255.255.255.0'>
+         <dhcp>
+           <range start='5.5.5.10' end='5.5.5.250'/>
+         </dhcp>
+       </ip>
    </network>
 
    # virsh net-define net-mgmt.xml
@@ -107,8 +116,8 @@ KVM Setting
 Vagrant Setting
 ---------------
 
-Vagrant box 만들기
-++++++++++++++++++
+Vagrant 튜토리얼
+++++++++++++++++
 
 먼저 base image 를 만든다.::
 
@@ -147,6 +156,8 @@ VM 을 Vagrant Box 로 freeze 한다.::
 
 
 * 이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.
+
+ 주의사항: 
 
 box 형태의 패키지 안에는 뭐가 들었나?::
 
@@ -200,8 +211,10 @@ box 형태의 패키지 안에는 뭐가 들었나?::
 
    default                   running (libvirt)
    
-* vagrant up 하면 root 권한으로 VM 이 만들어진다. 
-* 흠.. 일반 유저로 만들고 싶은데..
+* vagrant up 하면 box 로 부터 base 이미지를 만들고(/var/lib/libvirt/images/)
+* base 이미지로 부터 스냅샷하여 실제 VM 에게 attach 할 volume 을 만든다.
+* 볼륨은 Vagrantfile 내에 정의된 pool 에 만들어지게 된다.
+
 
  위 box 를 Vagrant Cloud 저장소에 업로드하여 형상관리가 가능하다.
  이것은 Docker Hub 와 매우 비슷하며 내가 만든 cloudx-os 도 Vagrant Cloud
@@ -209,10 +222,154 @@ box 형태의 패키지 안에는 뭐가 들었나?::
 
 우선 `Vagrant Cloud <https://app.vagrantup.com/>`_ 에서 가입 후 개인 저장소를
 만들자.
+
 * 나의 경우 ``gsjeon/cloudx-os`` 로 만들었고 해당 저장소에 버전별로 형상관리를 할 것이다.
 
 
 
+Custom Box
+++++++++++
+
+위에서 간략 사용 방법을 알았으니 이제 개발용 환경으로 프로비저닝을 위한 custom box 를 만들자.::
+
+   # cat Vagrantfile
+   # -*- mode: ruby -*-
+   # vi: set ft=ruby :
+
+   ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
+
+   Vagrant.configure("2") do |config|
+     Control = 3 # max number of contrl nodes
+     Compute = 2 # max number of compute nodes
+     Ceph = 1 # max number of ceph nodes
+     Ver = '2.0.7' # cloudx-os version
+     Zone = 'dev' # your zone name
+     Num = 1 # 4th octet IP prefix number
+
+   config.vm.synced_folder '.', '/vagrant', disabled: true
+
+     #==============#
+     # ControlNodes #
+     #==============#
+
+     (1..Control).each do |i|
+       config.vm.define "#{Zone}-control-#{i}" do |cfg|
+         cfg.vm.box = "cloudx-os-2.0.7"
+         cfg.vm.provider "libvirt" do |vb|
+           vb.cpus = 16
+           vb.memory = 32768
+           vb.management_network_name = "service"
+           vb.management_network_address = "5.5.5.#{Num}#{i}/24"
+           vb.management_network_mac = "52:54:00:3f:2a:a#{i}"
+           vb.storage_pool_name = "volumes"
+           vb.machine_virtual_size = 500
+           vb.graphics_ip = "0.0.0.0"
+         end
+         cfg.vm.host_name = "#{Zone}-control-#{i}"
+         cfg.vm.network "private_network", ip: "1.1.1.#{Num}#{i}",
+           libvirt__network_name: "mgmt",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "2.2.2.#{Num}#{i}",
+           libvirt__network_name: "storage",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+           #libvirt__mtu: "9000"
+         cfg.vm.network "private_network", ip: "3.3.3.#{Num}#{i}",
+           auto_config: false,
+           libvirt__network_name: "tunnel",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "4.4.4.#{Num}#{i}",
+           libvirt__network_name: "provider",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num}#{i}", host_ip: "127.0.0.1"
+         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
+       end
+     end
+
+     #================#
+     # Comopute Nodes #
+     #================#
+
+     (1..Compute).each do |i|
+       config.vm.define "#{Zone}-compute-#{i}" do |cfg|
+         cfg.vm.box = "cloudx-os-2.0.7"
+         cfg.vm.provider "libvirt" do |vb|
+           vb.cpus = 16
+           vb.memory = 32768
+           vb.nested = true
+           vb.cpu_mode = "host-passthrough"
+           vb.management_network_name = "service"
+           vb.management_network_address = "5.5.5.#{Num + 1}#{i}/24"
+           vb.management_network_mac = "52:54:00:3f:2a:b#{i}"
+           vb.storage_pool_name = "volumes"
+           vb.graphics_ip = "0.0.0.0"
+         end
+         cfg.vm.host_name = "#{Zone}-compute-#{i}"
+         cfg.vm.network "private_network", ip: "1.1.1.#{Num + 1}#{i}",
+           libvirt__network_name: "mgmt",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "2.2.2.#{Num + 1}#{i}",
+           libvirt__network_name: "storage",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+           #libvirt__mtu: "9000"
+         cfg.vm.network "private_network", ip: "3.3.3.#{Num + 1}#{i}",
+           auto_config: false,
+           libvirt__network_name: "tunnel",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "4.4.4.#{Num + 1}#{i}",
+           libvirt__network_name: "provider",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num + 1}#{i}", host_ip: "127.0.0.1"
+         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
+       end
+     end
+
+     #============#
+     # Ceph Nodes #
+     #============#
+
+     (1..Ceph).each do |i|
+       config.vm.define "#{Zone}-ceph-#{i}" do |cfg|
+         cfg.vm.box = "cloudx-os-2.0.7"
+         cfg.vm.provider "libvirt" do |vb|
+           vb.cpus = 8
+           vb.memory = 16384
+           vb.management_network_name = "service"
+           vb.management_network_address = "5.5.5.#{Num + 2}#{i}/24"
+           vb.management_network_mac = "52:54:00:3f:2a:c#{i}"
+           vb.storage :file, :device => 'sdb', :size => '300G'
+           vb.storage :file, :device => 'sdc', :size => '300G'
+           vb.storage :file, :device => 'sdd', :size => '300G'
+           vb.storage_pool_name = "volumes"
+           vb.graphics_ip = "0.0.0.0"
+         end
+         cfg.vm.host_name = "#{Zone}-ceph-#{i}"
+         cfg.vm.network "private_network", ip: "1.1.1.#{Num + 2}#{i}",
+           libvirt__network_name: "mgmt",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "2.2.2.#{Num + 2}#{i}",
+           libvirt__network_name: "storage",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+           #libvirt__mtu: "9000"
+         cfg.vm.network "private_network", ip: "3.3.3.#{Num + 2}#{i}",
+           auto_config: false,
+           libvirt__network_name: "tunnel",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "private_network", ip: "4.4.4.#{Num + 2}#{i}",
+           libvirt__network_name: "provider",
+           libvirt__forward_mode: "none",
+           libvirt__dhcp_enabled: "false"
+         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num + 2}#{i}", host_ip: "127.0.0.1"
+         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
+       end
+     end
 
 
 Reference
@@ -221,7 +378,5 @@ Reference
 * https://github.com/vagrant-libvirt/vagrant-libvirt
 * https://www.vagrantup.com/docs/boxes/base#default-user-settings
 * https://leyhline.github.io/2019/02/16/creating-a-vagrant-base-box/
-
-
 
 
