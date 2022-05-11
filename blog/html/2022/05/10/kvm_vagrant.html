@@ -116,41 +116,50 @@
 <li>iso = ISO 이미지를 저장할 저장소</li>
 </ul>
 <p>네트워크는 다음과 같이 정의한다.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat net-mgmt.xml</span>
-<span class="o">&lt;</span><span class="n">network</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">mgmt</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
-    <span class="o">&lt;</span><span class="n">forward</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bridge&quot;</span> <span class="o">/&gt;</span>
-    <span class="o">&lt;</span><span class="n">bridge</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;virbr1&quot;</span> <span class="o">/&gt;</span>
-<span class="o">&lt;/</span><span class="n">network</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cat net-service.xml
+&lt;network&gt;
+    &lt;name&gt;service&lt;/name&gt;
+    &lt;forward mode=&#39;nat&#39;&gt;
+      &lt;nat&gt;
+        &lt;port start=&#39;1024&#39; end=&#39;65535&#39;/&gt;
+      &lt;/nat&gt;
+    &lt;/forward&gt;
+    &lt;bridge name=&#39;virbr5&#39; stp=&#39;on&#39; delay=&#39;0&#39;/&gt;
+    &lt;ip address=&#39;5.5.5.1&#39; netmask=&#39;255.255.255.0&#39;&gt;
+      &lt;dhcp&gt;
+        &lt;range start=&#39;5.5.5.10&#39; end=&#39;5.5.5.250&#39;/&gt;
+      &lt;/dhcp&gt;
+    &lt;/ip&gt;
+&lt;/network&gt;
 
-<span class="c1"># virsh net-define net-mgmt.xml</span>
-<span class="c1"># virsh net-start mgmt</span>
-<span class="c1"># virsh net-autostart mgmt</span>
+# virsh net-define net-mgmt.xml
+# virsh net-start mgmt
+# virsh net-autostart mgmt
 
-<span class="c1"># virsh net-define net-storage.xml</span>
-<span class="c1"># virsh net-start storage</span>
-<span class="c1"># virsh net-autostart storage</span>
+# virsh net-define net-storage.xml
+# virsh net-start storage
+# virsh net-autostart storage
 
-<span class="c1"># virsh net-define net-tunnel.xml</span>
-<span class="c1"># virsh net-start tunnel</span>
-<span class="c1"># virsh net-autostart tunnel</span>
+# virsh net-define net-tunnel.xml
+# virsh net-start tunnel
+# virsh net-autostart tunnel
 
-<span class="c1"># virsh net-define net-provider.xml</span>
-<span class="c1"># virsh net-start provider</span>
-<span class="c1"># virsh net-autostart provider</span>
+# virsh net-define net-provider.xml
+# virsh net-start provider
+# virsh net-autostart provider
 
-<span class="c1"># virsh net-define net-service.xml</span>
-<span class="c1"># virsh net-start service</span>
-<span class="c1"># virsh net-autostart service</span>
+# virsh net-define net-service.xml
+# virsh net-start service
+# virsh net-autostart service
 
-<span class="c1"># virsh net-list</span>
- <span class="n">이름</span>       <span class="n">상태</span>     <span class="n">자동</span> <span class="n">시작</span>   <span class="n">Persistent</span>
-<span class="o">---------------------------------------------</span>
- <span class="n">mgmt</span>       <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
- <span class="n">provider</span>   <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
- <span class="n">service</span>    <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
- <span class="n">storage</span>    <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
- <span class="n">tunnel</span>     <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+# virsh net-list
+ 이름       상태     자동 시작   Persistent
+---------------------------------------------
+ mgmt       활성화   예          예
+ provider   활성화   예          예
+ service    활성화   예          예
+ storage    활성화   예          예
+ tunnel     활성화   예          예
 </pre></div>
 </div>
 <ul class="simple">
@@ -163,8 +172,8 @@
 </div>
 <div class="section" id="vagrant-setting">
 <h2>Vagrant Setting</h2>
-<div class="section" id="vagrant-box">
-<h3>Vagrant box 만들기</h3>
+<div class="section" id="vagrant">
+<h3>Vagrant 튜토리얼</h3>
 <p>먼저 base image 를 만든다.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ virt-install --name=cloudx-os-2.0.7.tpl \
                --os-type=Linux \
@@ -204,6 +213,8 @@ Total bytes written: 1629952000 (1.6GiB, 395MiB/s)
 <ul class="simple">
 <li>이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.</li>
 </ul>
+<blockquote>
+<div>주의사항:</div></blockquote>
 <p>box 형태의 패키지 안에는 뭐가 들었나?:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tar tvf cloudx-os-2.0.7.box
 -rw-r--r-- clex/clex        76 2022-05-11 15:54 ./metadata.json
@@ -258,16 +269,163 @@ default                   running (libvirt)
 </pre></div>
 </div>
 <ul class="simple">
-<li>vagrant up 하면 root 권한으로 VM 이 만들어진다.</li>
-<li>흠.. 일반 유저로 만들고 싶은데..</li>
+<li>vagrant up 하면 box 로 부터 base 이미지를 만들고(/var/lib/libvirt/images/)</li>
+<li>base 이미지로 부터 스냅샷하여 실제 VM 에게 attach 할 volume 을 만든다.</li>
+<li>볼륨은 Vagrantfile 내에 정의된 pool 에 만들어지게 된다.</li>
 </ul>
 <blockquote>
 <div>위 box 를 Vagrant Cloud 저장소에 업로드하여 형상관리가 가능하다.
 이것은 Docker Hub 와 매우 비슷하며 내가 만든 cloudx-os 도 Vagrant Cloud
 저장소에 업로드 해야겠다.</div></blockquote>
 <p>우선 <a class="reference external" href="https://app.vagrantup.com/">Vagrant Cloud</a> 에서 가입 후 개인 저장소를
-만들자.
-* 나의 경우 <span class="docutils literal"><span class="pre">gsjeon/cloudx-os</span></span> 로 만들었고 해당 저장소에 버전별로 형상관리를 할 것이다.</p>
+만들자.</p>
+<ul class="simple">
+<li>나의 경우 <span class="docutils literal"><span class="pre">gsjeon/cloudx-os</span></span> 로 만들었고 해당 저장소에 버전별로 형상관리를 할 것이다.</li>
+</ul>
+</div>
+<div class="section" id="custom-box">
+<h3>Custom Box</h3>
+<p>위에서 간략 사용 방법을 알았으니 이제 개발용 환경으로 프로비저닝을 위한 custom box 를 만들자.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat Vagrantfile</span>
+<span class="c1"># -*- mode: ruby -*-</span>
+<span class="c1"># vi: set ft=ruby :</span>
+
+<span class="n">ENV</span><span class="p">[</span><span class="s1">&#39;VAGRANT_DEFAULT_PROVIDER&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;libvirt&#39;</span>
+
+<span class="n">Vagrant</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;2&quot;</span><span class="p">)</span> <span class="n">do</span> <span class="o">|</span><span class="n">config</span><span class="o">|</span>
+  <span class="n">Control</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># max number of contrl nodes</span>
+  <span class="n">Compute</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># max number of compute nodes</span>
+  <span class="n">Ceph</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># max number of ceph nodes</span>
+  <span class="n">Ver</span> <span class="o">=</span> <span class="s1">&#39;2.0.7&#39;</span> <span class="c1"># cloudx-os version</span>
+  <span class="n">Zone</span> <span class="o">=</span> <span class="s1">&#39;dev&#39;</span> <span class="c1"># your zone name</span>
+  <span class="n">Num</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># 4th octet IP prefix number</span>
+
+<span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">synced_folder</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;/vagrant&#39;</span><span class="p">,</span> <span class="n">disabled</span><span class="p">:</span> <span class="n">true</span>
+
+  <span class="c1">#==============#</span>
+  <span class="c1"># ControlNodes #</span>
+  <span class="c1">#==============#</span>
+
+  <span class="p">(</span><span class="mf">1.</span><span class="o">.</span><span class="n">Control</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="n">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-control-#</span><span class="si">{i}</span><span class="s2">&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">cfg</span><span class="o">|</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;cloudx-os-2.0.7&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="s2">&quot;libvirt&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">cpus</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="mi">32768</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_name</span> <span class="o">=</span> <span class="s2">&quot;service&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_address</span> <span class="o">=</span> <span class="s2">&quot;5.5.5.#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">/24&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_mac</span> <span class="o">=</span> <span class="s2">&quot;52:54:00:3f:2a:a#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage_pool_name</span> <span class="o">=</span> <span class="s2">&quot;volumes&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">machine_virtual_size</span> <span class="o">=</span> <span class="mi">500</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">graphics_ip</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+      <span class="n">end</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-control-#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;1.1.1.#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;mgmt&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;2.2.2.#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;storage&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+        <span class="c1">#libvirt__mtu: &quot;9000&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;3.3.3.#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">auto_config</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;4.4.4.#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;provider&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;forwarded_port&quot;</span><span class="p">,</span> <span class="n">guest</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;600#</span><span class="si">{Num}</span><span class="s2">#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;bootstrap.sh&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="n">Control</span><span class="p">,</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">Ceph</span><span class="p">]</span>
+    <span class="n">end</span>
+  <span class="n">end</span>
+
+  <span class="c1">#================#</span>
+  <span class="c1"># Comopute Nodes #</span>
+  <span class="c1">#================#</span>
+
+  <span class="p">(</span><span class="mf">1.</span><span class="o">.</span><span class="n">Compute</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="n">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-compute-#</span><span class="si">{i}</span><span class="s2">&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">cfg</span><span class="o">|</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;cloudx-os-2.0.7&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="s2">&quot;libvirt&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">cpus</span> <span class="o">=</span> <span class="mi">16</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="mi">32768</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">nested</span> <span class="o">=</span> <span class="n">true</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">cpu_mode</span> <span class="o">=</span> <span class="s2">&quot;host-passthrough&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_name</span> <span class="o">=</span> <span class="s2">&quot;service&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_address</span> <span class="o">=</span> <span class="s2">&quot;5.5.5.#{Num + 1}#</span><span class="si">{i}</span><span class="s2">/24&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_mac</span> <span class="o">=</span> <span class="s2">&quot;52:54:00:3f:2a:b#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage_pool_name</span> <span class="o">=</span> <span class="s2">&quot;volumes&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">graphics_ip</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+      <span class="n">end</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-compute-#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;1.1.1.#{Num + 1}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;mgmt&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;2.2.2.#{Num + 1}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;storage&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+        <span class="c1">#libvirt__mtu: &quot;9000&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;3.3.3.#{Num + 1}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">auto_config</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;4.4.4.#{Num + 1}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;provider&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;forwarded_port&quot;</span><span class="p">,</span> <span class="n">guest</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;600#{Num + 1}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;bootstrap.sh&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="n">Control</span><span class="p">,</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">Ceph</span><span class="p">]</span>
+    <span class="n">end</span>
+  <span class="n">end</span>
+
+  <span class="c1">#============#</span>
+  <span class="c1"># Ceph Nodes #</span>
+  <span class="c1">#============#</span>
+
+  <span class="p">(</span><span class="mf">1.</span><span class="o">.</span><span class="n">Ceph</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="n">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">define</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-ceph-#</span><span class="si">{i}</span><span class="s2">&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">cfg</span><span class="o">|</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">box</span> <span class="o">=</span> <span class="s2">&quot;cloudx-os-2.0.7&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provider</span> <span class="s2">&quot;libvirt&quot;</span> <span class="n">do</span> <span class="o">|</span><span class="n">vb</span><span class="o">|</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">cpus</span> <span class="o">=</span> <span class="mi">8</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">memory</span> <span class="o">=</span> <span class="mi">16384</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_name</span> <span class="o">=</span> <span class="s2">&quot;service&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_address</span> <span class="o">=</span> <span class="s2">&quot;5.5.5.#{Num + 2}#</span><span class="si">{i}</span><span class="s2">/24&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">management_network_mac</span> <span class="o">=</span> <span class="s2">&quot;52:54:00:3f:2a:c#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage</span> <span class="p">:</span><span class="n">file</span><span class="p">,</span> <span class="p">:</span><span class="n">device</span> <span class="o">=&gt;</span> <span class="s1">&#39;sdb&#39;</span><span class="p">,</span> <span class="p">:</span><span class="n">size</span> <span class="o">=&gt;</span> <span class="s1">&#39;300G&#39;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage</span> <span class="p">:</span><span class="n">file</span><span class="p">,</span> <span class="p">:</span><span class="n">device</span> <span class="o">=&gt;</span> <span class="s1">&#39;sdc&#39;</span><span class="p">,</span> <span class="p">:</span><span class="n">size</span> <span class="o">=&gt;</span> <span class="s1">&#39;300G&#39;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage</span> <span class="p">:</span><span class="n">file</span><span class="p">,</span> <span class="p">:</span><span class="n">device</span> <span class="o">=&gt;</span> <span class="s1">&#39;sdd&#39;</span><span class="p">,</span> <span class="p">:</span><span class="n">size</span> <span class="o">=&gt;</span> <span class="s1">&#39;300G&#39;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">storage_pool_name</span> <span class="o">=</span> <span class="s2">&quot;volumes&quot;</span>
+        <span class="n">vb</span><span class="o">.</span><span class="n">graphics_ip</span> <span class="o">=</span> <span class="s2">&quot;0.0.0.0&quot;</span>
+      <span class="n">end</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="s2">&quot;#</span><span class="si">{Zone}</span><span class="s2">-ceph-#</span><span class="si">{i}</span><span class="s2">&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;1.1.1.#{Num + 2}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;mgmt&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;2.2.2.#{Num + 2}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;storage&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+        <span class="c1">#libvirt__mtu: &quot;9000&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;3.3.3.#{Num + 2}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">auto_config</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;tunnel&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;private_network&quot;</span><span class="p">,</span> <span class="n">ip</span><span class="p">:</span> <span class="s2">&quot;4.4.4.#{Num + 2}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__network_name</span><span class="p">:</span> <span class="s2">&quot;provider&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__forward_mode</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+        <span class="n">libvirt__dhcp_enabled</span><span class="p">:</span> <span class="s2">&quot;false&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">network</span> <span class="s2">&quot;forwarded_port&quot;</span><span class="p">,</span> <span class="n">guest</span><span class="p">:</span> <span class="mi">22</span><span class="p">,</span> <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;600#{Num + 2}#</span><span class="si">{i}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">host_ip</span><span class="p">:</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+      <span class="n">cfg</span><span class="o">.</span><span class="n">vm</span><span class="o">.</span><span class="n">provision</span> <span class="s2">&quot;shell&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="s2">&quot;bootstrap.sh&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="p">[</span><span class="n">Control</span><span class="p">,</span> <span class="n">Compute</span><span class="p">,</span> <span class="n">Ceph</span><span class="p">]</span>
+    <span class="n">end</span>
+  <span class="n">end</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="reference">
 <h3>Reference</h3>
