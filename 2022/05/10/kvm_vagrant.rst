@@ -1,5 +1,5 @@
-개발환경 구성(kvm + vagrant)
-============================
+Kvm + Vagrant
+=============
 
 
 
@@ -128,42 +128,88 @@ Vagrant box 만들기
  box를 만들 때 virtual size 전체가 복사되어 저장소 낭비가 되며 필요시 동적으로
  늘릴 수 있기 때문에 작게 하는게 좋다. 
 
-base image 로 ssh 접속을 위해 호스트의 key를 copy한다.::
-
-   $ ssh-keygen
-   $ ssh-copy-id clex@1.1.1.2
-
-* 1.1.1.2 IP는 VM 의 IP임
-
 VM 을 Vagrant Box 로 freeze 한다.::
 
    $ virsh shutdown cloudx-os-2.0.7.tpl
 
    $ wget https://raw.githubusercontent.com/vagrant-libvirt/vagrant-libvirt/master/tools/create_box.sh 
 
-   $ $ ./create_box.sh cloudx-os-2.0.7.qcow2
-   {500}
+   $ ./create_box.sh cloudx-os-2.0.7.qcow2
+   {3}
    ==> Creating box, tarring and gzipping
    ./metadata.json
    ./Vagrantfile
    ./box.img
-   Total bytes written: 1969807360 (1.9GiB, 405MiB/s)
+   Total bytes written: 1629952000 (1.6GiB, 395MiB/s)
    ==> cloudx-os-2.0.7.box created
    ==> You can now add the box:
    ==>   'vagrant box add cloudx-os-2.0.7.box --name cloudx-os-2.0.7'
 
+
 * 이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.
 
-위 box 를 로컬 저장소로 add 한다.::
+box 형태의 패키지 안에는 뭐가 들었나?::
+
+   $ tar tvf cloudx-os-2.0.7.box
+   -rw-r--r-- clex/clex        76 2022-05-11 15:54 ./metadata.json
+   -rw-r--r-- clex/clex       220 2022-05-11 15:54 ./Vagrantfile
+   -rw------- clex/clex 3221946368 2022-05-11 15:52 ./box.img
+
+* medata.json 안에는 provider 가 libvirt 라는 것이 정의되어 있고,
+* Vagrantfile 안에는 프로비저닝을 위한 설정들이 정의되어 있고,
+* box.img 는 qcow2 파일이 압축되어 있다. 
+* 아래에서 Vagrantfile 을 custom 하여 패키지를 다시 말아볼 것이다.
+
+만든 box 를 로컬 저장소로 push 한다.::
 
    $ vagrant box add cloudx-os-2.0.7.box --name cloudx-os-2.0.7
    ==> box: Box file was not detected as metadata. Adding it directly...
    ==> box: Adding box 'cloudx-os-2.0.7' (v0) for provider:
        box: Unpacking necessary files from: file:///data/kvm/images/cloudx-os-2.0.7.box
-   ==> box: Successfully added box 'cloudx-os-2.0.7' (v0) for 'libvirt'!   
+   ==> box: Successfully added box 'cloudx-os-2.0.7' (v0) for 'libvirt'!
 
    $ vagrant box list
    cloudx-os-2.0.7 (libvirt, 0)
+    
+로컬 저장소로 push 하면 아래 경로에 parent 이미지가 저장된다.::
+
+   $ ls -l ~/.vagrant.d/boxes/
+   total 0
+   drwxr-xr-x 3 clex clex 15 May 11 16:19 cloudx-os-2.0.7
+    
+* 만약, home 디렉토리에 용량이 별로 없고 box 가 쌓인다면 용량 초과 문제가
+  발생할 수 있다.
+* VAGRANT_HOME 환경변수를 재선언하여 바꿀 수 있다. (기본값이 ~/.vagrant.d)
+* https://www.vagrantup.com/docs/other/environmental-variables
+
+
+이제 box 가 있으니, VM 을 만들 수 있다.::
+
+   $ mkdir jgs-lab
+   $ cd jgs-lab/
+   $ vagrant init cloudx-os-2.0.7
+   $ vagrant up
+
+   $ sudo virsh list --all
+    Id   Name              State
+   ---------------------------------
+    1    jgs-lab_default   running
+
+   $ vagrant status
+   Current machine states:
+
+   default                   running (libvirt)
+   
+* vagrant up 하면 root 권한으로 VM 이 만들어진다. 
+* 흠.. 일반 유저로 만들고 싶은데..
+
+ 위 box 를 Vagrant Cloud 저장소에 업로드하여 형상관리가 가능하다.
+ 이것은 Docker Hub 와 매우 비슷하며 내가 만든 cloudx-os 도 Vagrant Cloud
+ 저장소에 업로드 해야겠다.
+
+우선 `Vagrant Cloud <https://app.vagrantup.com/>`_ 에서 가입 후 개인 저장소를
+만들자.
+* 나의 경우 ``gsjeon/cloudx-os`` 로 만들었고 해당 저장소에 버전별로 형상관리를 할 것이다.
 
 
 
