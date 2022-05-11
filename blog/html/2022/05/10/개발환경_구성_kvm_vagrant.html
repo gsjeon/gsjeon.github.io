@@ -71,8 +71,168 @@
     <div class="section" id="kvm-vagrant">
 <h1>개발환경 구성(kvm + vagrant)</h1>
 <p>내 시험서버에 개발환경을 구성한다.</p>
-<p>개발환경은 KVM + Vagrant 로 TACO + CloudPC 를 프로비저닝 하도록 한다.</p>
+<p>개발환경은 KVM + Vagrant 로 TACO + CloudPC 를 프로비저닝 하도록 하자.</p>
 <div id="more"> </div><p>KVM 설치와 Vagrant 설치 방법은 생략한다.</p>
+<div class="section" id="kvm-setting">
+<h2>KVM Setting</h2>
+<p>저장소는 다음과 같이 정의한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat pool-images.xml</span>
+<span class="o">&lt;</span><span class="n">pool</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;dir&#39;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">images</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">target</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">path</span><span class="o">&gt;/</span><span class="n">data</span><span class="o">/</span><span class="n">kvm</span><span class="o">/</span><span class="n">images</span><span class="o">&lt;/</span><span class="n">path</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">permissions</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">mode</span><span class="o">&gt;</span><span class="mi">0755</span><span class="o">&lt;/</span><span class="n">mode</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">owner</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">owner</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">group</span><span class="o">&gt;</span><span class="mi">0</span><span class="o">&lt;/</span><span class="n">group</span><span class="o">&gt;</span>
+    <span class="o">&lt;/</span><span class="n">permissions</span><span class="o">&gt;</span>
+  <span class="o">&lt;/</span><span class="n">target</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">pool</span><span class="o">&gt;</span>
+
+<span class="c1"># virsh pool-define pool-images.xml</span>
+<span class="c1"># virsh pool-start images</span>
+<span class="c1"># virsh pool-autostart images</span>
+
+<span class="c1"># virsh pool-define pool-volumes.xml</span>
+<span class="c1"># virsh pool-start volumes</span>
+<span class="c1"># virsh pool-autostart volumes</span>
+
+<span class="c1"># virsh pool-define pool-iso.xml</span>
+<span class="c1"># virsh pool-start iso</span>
+<span class="c1"># virsh pool-autostart iso</span>
+
+<span class="c1"># virsh pool-list</span>
+ <span class="n">Name</span>      <span class="n">State</span>    <span class="n">Autostart</span>
+<span class="o">-------------------------------</span>
+ <span class="n">default</span>   <span class="n">active</span>   <span class="n">no</span>
+ <span class="n">images</span>    <span class="n">active</span>   <span class="n">yes</span>
+ <span class="n">iso</span>       <span class="n">active</span>   <span class="n">yes</span>
+ <span class="n">volumes</span>   <span class="n">active</span>   <span class="n">yes</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>images = VM 템플릿 이미지가 저장될 저장소</li>
+<li>volumes = VM 의 디스크가 저장될 저장소</li>
+<li>iso = ISO 이미지를 저장할 저장소</li>
+</ul>
+<p>네트워크는 다음과 같이 정의한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># cat net-mgmt.xml</span>
+<span class="o">&lt;</span><span class="n">network</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span><span class="n">mgmt</span><span class="o">&lt;/</span><span class="n">name</span><span class="o">&gt;</span>
+    <span class="o">&lt;</span><span class="n">forward</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bridge&quot;</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;</span><span class="n">bridge</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;virbr1&quot;</span> <span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">network</span><span class="o">&gt;</span>
+
+<span class="c1"># virsh net-define net-mgmt.xml</span>
+<span class="c1"># virsh net-start mgmt</span>
+<span class="c1"># virsh net-autostart mgmt</span>
+
+<span class="c1"># virsh net-define net-storage.xml</span>
+<span class="c1"># virsh net-start storage</span>
+<span class="c1"># virsh net-autostart storage</span>
+
+<span class="c1"># virsh net-define net-tunnel.xml</span>
+<span class="c1"># virsh net-start tunnel</span>
+<span class="c1"># virsh net-autostart tunnel</span>
+
+<span class="c1"># virsh net-define net-provider.xml</span>
+<span class="c1"># virsh net-start provider</span>
+<span class="c1"># virsh net-autostart provider</span>
+
+<span class="c1"># virsh net-define net-service.xml</span>
+<span class="c1"># virsh net-start service</span>
+<span class="c1"># virsh net-autostart service</span>
+
+<span class="c1"># virsh net-list</span>
+ <span class="n">이름</span>       <span class="n">상태</span>     <span class="n">자동</span> <span class="n">시작</span>   <span class="n">Persistent</span>
+<span class="o">---------------------------------------------</span>
+ <span class="n">mgmt</span>       <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+ <span class="n">provider</span>   <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+ <span class="n">service</span>    <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+ <span class="n">storage</span>    <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+ <span class="n">tunnel</span>     <span class="n">활성화</span>   <span class="n">예</span>          <span class="n">예</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>mgmt = K8S/OpenStack Managemant Network</li>
+<li>storage = Ceph Public/Cluster</li>
+<li>tunnel = OpenStack self-service</li>
+<li>provider = OpenStack provider</li>
+<li>service = Spice/Portal Network</li>
+</ul>
+</div>
+<div class="section" id="vagrant-setting">
+<h2>Vagrant Setting</h2>
+<div class="section" id="vagrant-box">
+<h3>Vagrant box 만들기</h3>
+<p>먼저 base image 를 만든다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ virt-install --name=cloudx-os-2.0.7.tpl \
+               --os-type=Linux \
+               --os-variant=rhel7 \
+               --vcpus=1 \
+               --memory=1024 \
+               --cdrom=/data/kvm/iso/cloudx-os-2.0.7-x86_64.iso \
+               --disk path=/data/kvm/images/cloudx-os-2.0.7.qcow2,size=3 \
+               --network bridge:virbr1 \
+               --graphics vnc,listen=0.0.0.0,password=1234
+</pre></div>
+</div>
+<ul class="simple">
+<li>VNC 로 접속하여 OS 설치 완료!</li>
+</ul>
+<blockquote>
+<div>base images 생성 시 disk size 를 최대한 작게 설정하는게 좋다.
+box를 만들 때 virtual size 전체가 복사되어 저장소 낭비가 되며 필요시 동적으로
+늘릴 수 있기 때문에 작게 하는게 좋다.</div></blockquote>
+<p>base image 로 ssh 접속을 위해 호스트의 key를 copy한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ssh-keygen
+$ ssh-copy-id clex@1.1.1.2
+</pre></div>
+</div>
+<ul class="simple">
+<li>1.1.1.2 IP는 VM 의 IP임</li>
+</ul>
+<p>VM 을 Vagrant Box 로 freeze 한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ virsh shutdown cloudx-os-2.0.7.tpl
+
+$ wget https://raw.githubusercontent.com/vagrant-libvirt/vagrant-libvirt/master/tools/create_box.sh
+
+$ $ ./create_box.sh cloudx-os-2.0.7.qcow2
+{500}
+==&gt; Creating box, tarring and gzipping
+./metadata.json
+./Vagrantfile
+./box.img
+Total bytes written: 1969807360 (1.9GiB, 405MiB/s)
+==&gt; cloudx-os-2.0.7.box created
+==&gt; You can now add the box:
+==&gt;   &#39;vagrant box add cloudx-os-2.0.7.box --name cloudx-os-2.0.7&#39;
+</pre></div>
+</div>
+<ul class="simple">
+<li>이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.</li>
+</ul>
+<p>위 box 를 로컬 저장소로 add 한다.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ vagrant box add cloudx-os-2.0.7.box --name cloudx-os-2.0.7
+==&gt; box: Box file was not detected as metadata. Adding it directly...
+==&gt; box: Adding box &#39;cloudx-os-2.0.7&#39; (v0) for provider:
+    box: Unpacking necessary files from: file:///data/kvm/images/cloudx-os-2.0.7.box
+==&gt; box: Successfully added box &#39;cloudx-os-2.0.7&#39; (v0) for &#39;libvirt&#39;!
+
+$ vagrant box list
+cloudx-os-2.0.7 (libvirt, 0)
+</pre></div>
+</div>
+</div>
+<div class="section" id="reference">
+<h3>Reference</h3>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/vagrant-libvirt/vagrant-libvirt">https://github.com/vagrant-libvirt/vagrant-libvirt</a></li>
+<li><a class="reference external" href="https://www.vagrantup.com/docs/boxes/base#default-user-settings">https://www.vagrantup.com/docs/boxes/base#default-user-settings</a></li>
+<li><a class="reference external" href="https://leyhline.github.io/2019/02/16/creating-a-vagrant-base-box/">https://leyhline.github.io/2019/02/16/creating-a-vagrant-base-box/</a></li>
+</ul>
+</div>
+</div>
 </div>
 
     <div class="postmeta">
