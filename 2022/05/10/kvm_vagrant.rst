@@ -169,7 +169,6 @@ VM 을 Vagrant Box 로 freeze 한다.::
 
 * 이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.
 
- 주의사항: 
 
 box 형태의 패키지 안에는 뭐가 들었나?::
 
@@ -251,6 +250,7 @@ TACO 를 설치할 box 를 직접 만들어 provisioning 하니 문제가 있다
 
 
 정석매니저님이 교육용으로 만든 파일을 수정하여 새롭게 만들었다.
+
 * `Github <https://github.com/gsjeon/misc/tree/main/vagrant>`_  에 올려두었다
 
 사용방법

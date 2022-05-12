@@ -237,8 +237,6 @@ Total bytes written: 1629952000 (1.6GiB, 395MiB/s)
 <ul class="simple">
 <li>이렇게 하면 vagrant 가 사용할 수 있도록 box 형태가 된다.</li>
 </ul>
-<blockquote>
-<div>주의사항:</div></blockquote>
 <p>box 형태의 패키지 안에는 뭐가 들었나?:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tar tvf cloudx-os-2.0.7.box
 -rw-r--r-- clex/clex        76 2022-05-11 15:54 ./metadata.json
@@ -314,8 +312,10 @@ default                   running (libvirt)
 * 이유는 box 내부에 dhcp client 가 설치되어 있아야 했다.</p>
 <p>아~ 그냥 Vagrant Cloud 에서 Vagrant 용으로 제공해주는 official image 를 가져다
 쓰자..</p>
-<p>정석매니저님이 교육용으로 만든 파일을 수정하여 새롭게 만들었다.
-* <a class="reference external" href="https://github.com/gsjeon/misc/tree/main/vagrant">Github</a>  에 올려두었다</p>
+<p>정석매니저님이 교육용으로 만든 파일을 수정하여 새롭게 만들었다.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/gsjeon/misc/tree/main/vagrant">Github</a>  에 올려두었다</li>
+</ul>
 <div class="section" id="section-1">
 <h4>사용방법</h4>
 <p>Git Clone.:</p>
