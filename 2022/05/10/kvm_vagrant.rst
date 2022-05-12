@@ -16,6 +16,18 @@ Kvm + Vagrant
 
 KVM 설치와 Vagrant 설치 방법은 생략한다.
 
+My ENV
+------
+
+* OS = Debian 11 (Code Name : bullseye)
+* Kernel = 5.10.0
+* kvm = 5.2.0
+    - qemu = 5.2.0 (Debian 1:5.2+dfsg-11+deb11u2)
+    - libvirt = 7.0.0
+* vagrant = 2.2.19
+    - vagrant-libvirt = 0.8.2 (plugin)
+
+
 KVM Setting
 -----------
 
@@ -69,10 +81,10 @@ KVM Setting
            <port start='1024' end='65535'/>
          </nat>
        </forward>
-       <bridge name='virbr5' stp='on' delay='0'/>
-       <ip address='5.5.5.1' netmask='255.255.255.0'>
+       <bridge name='virbr0' stp='on' delay='0'/>
+       <ip address='100.100.100.1' netmask='255.255.255.0'>
          <dhcp>
-           <range start='5.5.5.10' end='5.5.5.250'/>
+           <range start='100.100.100.10' end='100.100.100.250'/>
          </dhcp>
        </ip>
    </network>
@@ -227,12 +239,37 @@ box 형태의 패키지 안에는 뭐가 들었나?::
 
 
 
-Custom Box
-++++++++++
+Custom Vagrant
++++++++++++++++
 
-위에서 간략 사용 방법을 알았으니 이제 개발용 환경으로 프로비저닝을 위한 custom box 를 만들자.::
+TACO 를 설치할 box 를 직접 만들어 provisioning 하니 문제가 있다.
+* IP 를 가져오지 못하고 멈춘다. (dhcp: false 로 하였음)
+* 이유는 box 내부에 dhcp client 가 설치되어 있아야 했다.
 
-   # cat Vagrantfile
+아~ 그냥 Vagrant Cloud 에서 Vagrant 용으로 제공해주는 official image 를 가져다
+쓰자..
+
+
+정석매니저님이 교육용으로 만든 파일을 수정하여 새롭게 만들었다.
+* `Github <https://github.com/gsjeon/misc/tree/main/vagrant>`_  에 올려두었다
+
+사용방법
+^^^^^^^^
+
+Git Clone.::
+
+   ~# git clone https://github.com/gsjeon/misc.git   
+
+
+디렉토리 만들고 소스 복사.::
+
+   # mkdir /data/kvm/taco-lab
+   # cd /data/kvm/taco-lab/
+   # cp ~/misc/vagrant/vagrant/* .    
+
+Vagrantfile 에서 환경변수 설정.::
+
+   # vi Vagrantfile
    # -*- mode: ruby -*-
    # vi: set ft=ruby :
 
@@ -242,141 +279,122 @@ Custom Box
      Control = 3 # max number of contrl nodes
      Compute = 2 # max number of compute nodes
      Ceph = 1 # max number of ceph nodes
-     Ver = '2.0.7' # cloudx-os version
      Zone = 'dev' # your zone name
-     Num = 1 # 4th octet IP prefix number
+     NetPrefixService = '100.100.100' # 1 ~ 3th octet IP
+     NetPrefixMGMT = '1.1.1' # 1 ~ 3th octet IP
+     NetPrefixStorage = '2.2.2' # 1 ~ 3th octet IP
+     NetPrefixTunnel = '3.3.3' # 1 ~ 3th octet IP
+     NetPrefixProvider = '4.4.4' # 1 ~ 3th octet IP
+     NetSuffix = 1 # 4th octet IP
 
-   config.vm.synced_folder '.', '/vagrant', disabled: true
+   config.vm.synced_folder "/data/kvm/cloudx-pkg", "/vagrant", type: "nfs"
+   ...
 
-     #==============#
-     # ControlNodes #
-     #==============#
+* Control = 컨트롤러 노드의 개수
+* Compute = 컴퓨트 노드의 개수
+* Ceph = Ceph 노드의 개수
+* Zone = 자신의 존 이름(아무렇게나)
+* NetPrefixService = Portal/Spice 전용 네트워크의 대역 (/24로 가정하고 3 옥텟)
+* NetPrefixMGMT = K8S/OpenStack 관리 네트워크의 대역 (/24로 가정하고 3 옥텟)
+* NetPrefixStorage = Ceph Public/Cluster 네트워크의 대역 (/24로 가정하고 3 옥텟)
+* NetPrefixTunnel = OpenStack selfservice 네트워크의 대역 (/24로 가정하고 3 옥텟)
+* NetPrefixProvider = Provider 네트워크의 대역 (/24로 가정하고 3 옥텟)
+* NetSuffix = 4 옥텟의 IP
+* config.vm.synced_folder 는 호스트의 특정 디렉토리를 VM 에 공유하기 위해
+  사용된다.
+  - /data/kvm/cloudx-pkg 은 호스트의 디렉토리를 의미하고,
+  - /vagrant 은 VM 에서 마운트할 마운트 포인트를 의미하고,
+  - type: nfs 는 nfs 를 이용해 공유한다는 의미임
 
-     (1..Control).each do |i|
-       config.vm.define "#{Zone}-control-#{i}" do |cfg|
-         cfg.vm.box = "cloudx-os-2.0.7"
-         cfg.vm.provider "libvirt" do |vb|
-           vb.cpus = 16
-           vb.memory = 32768
-           vb.management_network_name = "service"
-           vb.management_network_address = "5.5.5.#{Num}#{i}/24"
-           vb.management_network_mac = "52:54:00:3f:2a:a#{i}"
-           vb.storage_pool_name = "volumes"
-           vb.machine_virtual_size = 500
-           vb.graphics_ip = "0.0.0.0"
-         end
-         cfg.vm.host_name = "#{Zone}-control-#{i}"
-         cfg.vm.network "private_network", ip: "1.1.1.#{Num}#{i}",
-           libvirt__network_name: "mgmt",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "2.2.2.#{Num}#{i}",
-           libvirt__network_name: "storage",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-           #libvirt__mtu: "9000"
-         cfg.vm.network "private_network", ip: "3.3.3.#{Num}#{i}",
-           auto_config: false,
-           libvirt__network_name: "tunnel",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "4.4.4.#{Num}#{i}",
-           libvirt__network_name: "provider",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num}#{i}", host_ip: "127.0.0.1"
-         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
-       end
-     end
+위와 같이 설정 후 vagrant up 한다.::
 
-     #================#
-     # Comopute Nodes #
-     #================#
+   # vagrant up
 
-     (1..Compute).each do |i|
-       config.vm.define "#{Zone}-compute-#{i}" do |cfg|
-         cfg.vm.box = "cloudx-os-2.0.7"
-         cfg.vm.provider "libvirt" do |vb|
-           vb.cpus = 16
-           vb.memory = 32768
-           vb.nested = true
-           vb.cpu_mode = "host-passthrough"
-           vb.management_network_name = "service"
-           vb.management_network_address = "5.5.5.#{Num + 1}#{i}/24"
-           vb.management_network_mac = "52:54:00:3f:2a:b#{i}"
-           vb.storage_pool_name = "volumes"
-           vb.graphics_ip = "0.0.0.0"
-         end
-         cfg.vm.host_name = "#{Zone}-compute-#{i}"
-         cfg.vm.network "private_network", ip: "1.1.1.#{Num + 1}#{i}",
-           libvirt__network_name: "mgmt",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "2.2.2.#{Num + 1}#{i}",
-           libvirt__network_name: "storage",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-           #libvirt__mtu: "9000"
-         cfg.vm.network "private_network", ip: "3.3.3.#{Num + 1}#{i}",
-           auto_config: false,
-           libvirt__network_name: "tunnel",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "4.4.4.#{Num + 1}#{i}",
-           libvirt__network_name: "provider",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num + 1}#{i}", host_ip: "127.0.0.1"
-         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
-       end
-     end
+* 프로비저닝하는데 약간의 시간이 걸린다.
 
-     #============#
-     # Ceph Nodes #
-     #============#
+상태확인.::
 
-     (1..Ceph).each do |i|
-       config.vm.define "#{Zone}-ceph-#{i}" do |cfg|
-         cfg.vm.box = "cloudx-os-2.0.7"
-         cfg.vm.provider "libvirt" do |vb|
-           vb.cpus = 8
-           vb.memory = 16384
-           vb.management_network_name = "service"
-           vb.management_network_address = "5.5.5.#{Num + 2}#{i}/24"
-           vb.management_network_mac = "52:54:00:3f:2a:c#{i}"
-           vb.storage :file, :device => 'sdb', :size => '300G'
-           vb.storage :file, :device => 'sdc', :size => '300G'
-           vb.storage :file, :device => 'sdd', :size => '300G'
-           vb.storage_pool_name = "volumes"
-           vb.graphics_ip = "0.0.0.0"
-         end
-         cfg.vm.host_name = "#{Zone}-ceph-#{i}"
-         cfg.vm.network "private_network", ip: "1.1.1.#{Num + 2}#{i}",
-           libvirt__network_name: "mgmt",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "2.2.2.#{Num + 2}#{i}",
-           libvirt__network_name: "storage",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-           #libvirt__mtu: "9000"
-         cfg.vm.network "private_network", ip: "3.3.3.#{Num + 2}#{i}",
-           auto_config: false,
-           libvirt__network_name: "tunnel",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "private_network", ip: "4.4.4.#{Num + 2}#{i}",
-           libvirt__network_name: "provider",
-           libvirt__forward_mode: "none",
-           libvirt__dhcp_enabled: "false"
-         cfg.vm.network "forwarded_port", guest: 22, host: "600#{Num + 2}#{i}", host_ip: "127.0.0.1"
-         cfg.vm.provision "shell", path: "bootstrap.sh", args: [Control, Compute, Ceph]
-       end
-     end
+   # vagrant status
+   Current machine states:
+
+   dev-control-1             running (libvirt)
+   dev-control-2             running (libvirt)
+   dev-control-3             running (libvirt)
+   dev-compute-1             running (libvirt)
+   dev-compute-2             running (libvirt)
+   dev-ceph-1                running (libvirt)
 
 
-Reference
-+++++++++
+SSH 접속방법.::
 
-* https://github.com/vagrant-libvirt/vagrant-libvirt
-* https://www.vagrantup.com/docs/boxes/base#default-user-settings
-* https://leyhline.github.io/2019/02/16/creating-a-vagrant-base-box/
+   # vagrant ssh dev-control-1
+   [clex@dev-control-1 ~]$ ip a
+   1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+       link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+       inet 127.0.0.1/8 scope host lo
+          valid_lft forever preferred_lft forever
+       inet6 ::1/128 scope host
+          valid_lft forever preferred_lft forever
+   2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+       link/ether 52:54:00:e4:06:62 brd ff:ff:ff:ff:ff:ff
+       inet 100.100.100.127/24 brd 100.100.100.255 scope global dynamic eth0
+          valid_lft 3482sec preferred_lft 3482sec
+       inet6 fe80::5054:ff:fee4:662/64 scope link
+          valid_lft forever preferred_lft forever
+   3: eth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+       link/ether 52:54:00:dc:ff:86 brd ff:ff:ff:ff:ff:ff
+       inet 1.1.1.11/24 brd 1.1.1.255 scope global eth1
+          valid_lft forever preferred_lft forever
+       inet6 fe80::5054:ff:fedc:ff86/64 scope link
+          valid_lft forever preferred_lft forever
+   4: eth2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+       link/ether 52:54:00:ea:11:7e brd ff:ff:ff:ff:ff:ff
+       inet 2.2.2.11/24 brd 2.2.2.255 scope global eth2
+          valid_lft forever preferred_lft forever
+       inet6 fe80::5054:ff:feea:117e/64 scope link
+          valid_lft forever preferred_lft forever
+   5: eth3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+       link/ether 52:54:00:26:48:20 brd ff:ff:ff:ff:ff:ff
+       inet 3.3.3.11/24 brd 3.3.3.255 scope global eth3
+          valid_lft forever preferred_lft forever
+       inet6 fe80::5054:ff:fe26:4820/64 scope link
+          valid_lft forever preferred_lft forever
+   6: eth4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+       link/ether 52:54:00:de:04:70 brd ff:ff:ff:ff:ff:ff
+       inet6 fe80::5054:ff:fede:470/64 scope link
+          valid_lft forever preferred_lft forever
+
+   [clex@dev-control-1 ~]$ cat /etc/hosts
+   127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+   ::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+   1.1.1.11 dev-control-1
+   1.1.1.12 dev-control-2
+   1.1.1.13 dev-control-3
+   1.1.1.21 dev-compute-1
+   1.1.1.22 dev-compute-2
+   1.1.1.31 dev-ceph-1
+
+* vagrant ssh <VM명> 으로 접속하면 위와 같이 접속된다.
+* VM 내부에서 보면 Vagrantfile 에 정의한대로 IP 설정이 자동으로 되어있다.
+* vagrant ssh 로 접속 가능한 이유는 Vagrantfile 내에 로컬 터널링 하도록
+  설정되어 있다. 그래서 호스트 600xx 포트와 VM 22포트로 터널링된다.
+* Service 대역의 IP는 외부로 nat 되어 통신되는 IP 이고 DHCP 유동 IP로 세팅된다.
+* 나머지 IP는 Net Prefix/Suffix 의 변수에 따라 고정 IP로 할당된다. 
+  - 필요시 자유롭게 바꿔도 된다.
+
+공유파일 사용방법.::
+
+   [clex@dev-control-1 ~]$ sudo mount /vagrant/
+
+   [clex@dev-control-1 ~]$ df -hH /vagrant
+   Filesystem                          Size  Used Avail Use% Mounted on
+   100.100.100.1:/data/kvm/cloudx-pkg  930G   12G  918G   2% /vagrant
+    
+* fstab 에 호스트의 볼륨을 noauto 로 마운트 하도록 해두었다.
+* 필요시에만 mount 하여 필요한 파일을 공유하면 된다.
+
+
+
+
 
 
